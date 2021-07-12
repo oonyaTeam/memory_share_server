@@ -1,10 +1,10 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 	"os"
-	"fmt"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -18,7 +18,7 @@ func dbFunc(db *sql.DB) gin.HandlerFunc {
     return func(c *gin.Context) {
         if _, err := db.Exec("CREATE TABLE IF NOT EXISTS ticks (tick timestamp)"); err != nil {
             c.String(http.StatusInternalServerError,
-                fmt.Sprintf("Error creating database table: %q", err))
+                fmt.Sprintf("Error creating database table: %q\n DB:%s\n", err, os.Getenv("DATABASE_URL")))
             return
         }
 
@@ -48,6 +48,18 @@ func dbFunc(db *sql.DB) gin.HandlerFunc {
     }
 }
 
+func connectDB() (*sql.DB, error){
+	// if e := os.Getenv("DEV"); e == "DEV" {
+	// 	db, err :=  sql.Open("postgres", "user= dbname=test password= sslmode=disable host=localhost ")
+	// 	return db, err; 
+	// } else {
+	// 	db, err := sql.Open("postgres", os.Getenv("DATABASE_URL"))
+	// 	return db, err;
+	// }
+	db, err := sql.Open("postgres", os.Getenv("DATABASE_URL"))
+	return db, err;
+}
+
 func main() {
 	port := os.Getenv("PORT")
 
@@ -64,8 +76,8 @@ func main() {
 		})
 	})
 
-	
-	db, err := sql.Open("postgres", os.Getenv("DATABASE_URL"))
+
+	db, err := connectDB()
     if err != nil {
         log.Fatalf("Error opening database: %q", err)
     }
