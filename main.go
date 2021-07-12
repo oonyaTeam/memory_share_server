@@ -48,6 +48,22 @@ func dbFunc(db *sql.DB) gin.HandlerFunc {
     }
 }
 
+type Memory struct{
+	Memory string `json:"memory"`
+	Longitude float64 `json:"longitude"`
+	Latitude float64 `json:"latitude"`
+	Seen_author []string `json:"seen_author"`
+	Episodes []Episode `json:"episodes"`
+	Image string `json:"image"`
+	Author string `json:"author"`
+}
+
+type Episode struct{
+	Id string `json:"id"`
+	Episode string `json:"episode"`
+	Distance int `json:"distance"`
+}
+
 func connectDB() (*sql.DB, error){
 	// if e := os.Getenv("DEV"); e == "DEV" {
 	// 	db, err :=  sql.Open("postgres", "user= dbname=test password= sslmode=disable host=localhost ")
@@ -61,6 +77,26 @@ func connectDB() (*sql.DB, error){
 }
 
 func main() {
+	e1 := Episode{
+		Id :"first_id",
+		Episode: "subepisode 1Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.",
+		Distance : 30,
+	}
+	e2 := Episode{
+		"second_id",
+		"sub episode2 Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.",
+		50,
+	}
+	m := Memory{
+		"main episode1 Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.",
+		30.5,
+		40.5,
+		[]string{"author1", "author2"},
+		[]Episode{e1, e2},
+		"https://pbs.twimg.com/media/E6CYtu1VcAIjMvY?format=jpg&name=large",
+		"author1",
+	}
+
 	port := os.Getenv("PORT")
 
 	if port == "" {
@@ -72,8 +108,12 @@ func main() {
 
 	router.GET("/", func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{
-			"msg" : "messages",
+			"msg" : "OK",
 		})
+	})
+	
+	router.GET("/memories", func(c *gin.Context) {
+		c.JSON(http.StatusOK, m)
 	})
 
 
