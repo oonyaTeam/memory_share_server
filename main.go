@@ -116,6 +116,23 @@ func main() {
 		c.JSON(http.StatusOK, m)
 	})
 
+	router.GET("/mymemories", func(c *gin.Context) {
+		// uuid := c.Query("uuid")
+		c.JSON(http.StatusOK, m)
+	})
+
+	router.POST("/create-memory", func(c *gin.Context)  {
+		var mb Memory
+		if err := c.BindJSON(&mb); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{
+				"err" : err.Error(),
+			})
+			return
+		}
+		c.JSON(http.StatusCreated, gin.H{
+			"msg" : "OK",
+		})
+	})
 
 	db, err := connectDB()
     if err != nil {
