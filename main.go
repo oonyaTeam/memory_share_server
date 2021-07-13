@@ -96,6 +96,15 @@ func main() {
 		"https://pbs.twimg.com/media/E6CYtu1VcAIjMvY?format=jpg&name=large",
 		"author1",
 	}
+	m2 := Memory{
+		"main episode2 Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.",
+		50.2,
+		125.2,
+		[]string{"author1", "author3"},
+		[]Episode{e1, e2},
+		"https://pbs.twimg.com/media/E6FYPWLVIAQvY04?format=jpg&name=small",
+		"author2",
+	}
 
 	port := os.Getenv("PORT")
 
@@ -113,12 +122,16 @@ func main() {
 	})
 	
 	router.GET("/memories", func(c *gin.Context) {
-		c.JSON(http.StatusOK, m)
+		c.JSON(http.StatusOK, gin.H{
+			"memories" : []Memory{m, m2},
+		})
 	})
 
 	router.GET("/mymemories", func(c *gin.Context) {
 		// uuid := c.Query("uuid")
-		c.JSON(http.StatusOK, m)
+		c.JSON(http.StatusOK, gin.H{
+			"memories" : []Memory{m, m2},
+		})
 	})
 
 	router.POST("/create-memory", func(c *gin.Context)  {
