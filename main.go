@@ -90,7 +90,6 @@ func main() {
 	router.GET("/mymemories", memoryHandler.GetMyMemories)
 
 	router.POST("/create-memory", memoryHandler.CreateMemory)
-	router.POST("/parseEpi", memoryHandler.ParseEpi)
 
 	router.GET("/db", dbFunc(db))
 	router.Run(":" + port)

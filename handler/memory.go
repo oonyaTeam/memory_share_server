@@ -68,16 +68,3 @@ func (m *MemoryHandler) CreateMemory(c *gin.Context) {
 	})
 }
 
-func (m *MemoryHandler) ParseEpi(c *gin.Context) {
-	log.Println("parseEpi v2")
-	var eb model.Episode
-	if err := c.ShouldBindJSON(&eb); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"err": err.Error(),
-		})
-		return
-	}
-	c.JSON(http.StatusCreated, gin.H{
-		"msg": "OK",
-	})
-}
