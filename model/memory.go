@@ -11,8 +11,8 @@ type Memory struct {
 }
 
 type Episode struct {
-	Id        string  `json:"id"`
-	Episode   string  `json:"episode"`
-	Longitude float64 `json:"longitude"`
-	Latitude  float64 `json:"latitude"`
+	Id        string  `json:"id" binding:"required"`
+	Episode   string  `json:"episode" binding:"required"`
+	Longitude float64 `json:"longitude" binding:"required"`
+	Latitude  float64 `json:"latitude" binding:"required"`
 }

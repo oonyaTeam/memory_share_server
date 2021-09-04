@@ -8,14 +8,12 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
-	// "github.com/go-swagger/go-swagger/fixtures/goparsing/petstore/rest/handlers"
 	"github.com/heroku/go-getting-started/handler"
 	_ "github.com/heroku/x/hmetrics/onload"
 
 	"database/sql"
 
 	_ "github.com/lib/pq"
-	// "memoryshare/handler"
 )
 
 func dbFunc(db *sql.DB) gin.HandlerFunc {
@@ -75,18 +73,24 @@ func main() {
 	router := gin.New()
 	router.Use(gin.Logger())
 
-	router.GET("/", handler.GetMessage)
-
-	router.GET("/memories", handler.GetMemories)
-
-	router.GET("/mymemories", handler.GetMyMemories)
-
-	router.POST("/create-memory", handler.CreateMemory)
+	router.GET("/", func(c *gin.Context) {
+		c.JSON(http.StatusOK, gin.H{
+			"msg": "OK",
+		})
+	})
 
 	db, err := connectDB()
 	if err != nil {
 		log.Fatalf("Error opening database: %q", err)
 	}
+	memoryHandler := handler.NewMemoryHandler(db)
+
+	router.GET("/memories", memoryHandler.GetMemories)
+
+	router.GET("/mymemories", memoryHandler.GetMyMemories)
+
+	router.POST("/create-memory", memoryHandler.CreateMemory)
+	router.POST("/parseEpi", memoryHandler.ParseEpi)
 
 	router.GET("/db", dbFunc(db))
 	router.Run(":" + port)

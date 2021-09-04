@@ -1,95 +1,77 @@
 package handler
 
 import (
+	"log"
+	"net/http"
+
 	"github.com/gin-gonic/gin"
 	"github.com/heroku/go-getting-started/model"
-	"net/http"
+	"github.com/heroku/go-getting-started/repository"
+
+	"database/sql"
+
+	_ "github.com/lib/pq"
 )
 
-func GetMessage(c *gin.Context) {
+type MemoryHandler struct {
+	db *sql.DB
+}
+
+func NewMemoryHandler(db *sql.DB) *MemoryHandler {
+	return &MemoryHandler{
+		db: db,
+	}
+}
+
+func (m *MemoryHandler) GetMemories(c *gin.Context) {
+	memories, err := repository.GetMemories(m.db)
+	if err != nil {
+		panic("ee") // TODO: エラーハンドリングは適切に
+	}
 	c.JSON(http.StatusOK, gin.H{
+		"memories": memories,
+	})
+}
+
+// func GetMyMemories(c *gin.Context) {
+func (m *MemoryHandler) GetMyMemories(c *gin.Context) {
+	// uuid := c.Query("uuid")
+	uuid := "uuid"
+	memories, err := repository.GetMyMemories(m.db, uuid)
+	if err != nil {
+		panic("err")
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"memories": memories,
+	})
+}
+
+func (m *MemoryHandler) CreateMemory(c *gin.Context) {
+	var mb model.Memory
+	if err := c.BindJSON(&mb); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"err": err.Error(),
+		})
+		return
+	}
+
+	err := repository.CreateMemory(m.db, mb)
+	if err != nil {
+		panic("eerr")
+	}
+
+	log.Println("bind memory=")
+	log.Printf("%v\n", mb)
+	c.JSON(http.StatusCreated, gin.H{
 		"msg": "OK",
 	})
 }
 
-func GetMemories(c *gin.Context) {
-	e1 := model.Episode{
-		Id:        "first_id",
-		Episode:   "subepisode 1Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.",
-		Longitude: 136.597816,
-		Latitude:  34.860853,
-	}
-	e2 := model.Episode{
-		Id:        "second_id",
-		Episode:   "sub episode2 Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.",
-		Longitude: 136.599202,
-		Latitude:  34.860156,
-	}
-	m := model.Memory{
-		Memory:      "main episode1 Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.",
-		Longitude:   136.601064,
-		Latitude:    34.857498,
-		Seen_author: []string{"author1", "author2"},
-		Episodes:    []model.Episode{e1, e2},
-		Image:       "https://pbs.twimg.com/media/E6CYtu1VcAIjMvY?format=jpg&name=large",
-		Author:      "author1",
-	}
-	m2 := model.Memory{
-		Memory:      "main episode2 Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.",
-		Longitude:   136.602276,
-		Latitude:    34.856582,
-		Seen_author: []string{"author1", "author3"},
-		Episodes:    []model.Episode{e1, e2},
-		Image:       "https://pbs.twimg.com/media/E6FYPWLVIAQvY04?format=jpg&name=small",
-		Author:      "author2",
-	}
-	c.JSON(http.StatusOK, gin.H{
-		"memories": []model.Memory{m, m2},
-		// "msg": "Memories",
-	})
-}
-
-func GetMyMemories(c *gin.Context) {
-	// uuid := c.Query("uuid")
-
-	e1 := model.Episode{
-		Id:        "first_id",
-		Episode:   "subepisode 1Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.",
-		Longitude: 136.597816,
-		Latitude:  34.860853,
-	}
-	e2 := model.Episode{
-		Id:        "second_id",
-		Episode:   "sub episode2 Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.",
-		Longitude: 136.599202,
-		Latitude:  34.860156,
-	}
-	m := model.Memory{
-		Memory:      "main episode1 Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.",
-		Longitude:   136.601064,
-		Latitude:    34.857498,
-		Seen_author: []string{"author1", "author2"},
-		Episodes:    []model.Episode{e1, e2},
-		Image:       "https://pbs.twimg.com/media/E6CYtu1VcAIjMvY?format=jpg&name=large",
-		Author:      "author1",
-	}
-	m2 := model.Memory{
-		Memory:      "main episode2 Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.",
-		Longitude:   136.602276,
-		Latitude:    34.856582,
-		Seen_author: []string{"author1", "author3"},
-		Episodes:    []model.Episode{e1, e2},
-		Image:       "https://pbs.twimg.com/media/E6FYPWLVIAQvY04?format=jpg&name=small",
-		Author:      "author2",
-	}
-	c.JSON(http.StatusOK, gin.H{
-		"memories": []model.Memory{m, m2},
-	})
-}
-
-func CreateMemory(c *gin.Context) {
-	var mb model.Memory
-	if err := c.BindJSON(&mb); err != nil {
+func (m *MemoryHandler) ParseEpi(c *gin.Context) {
+	log.Println("parseEpi v2")
+	var eb model.Episode
+	if err := c.ShouldBindJSON(&eb); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"err": err.Error(),
 		})
