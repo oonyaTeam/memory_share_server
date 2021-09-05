@@ -115,7 +115,8 @@ func main() {
 	
 	auth, err :=  firebase.InitializeAppWithRefreshToken()
 	if err != nil {
-		panic("firabase死んでるけど大丈夫そ？")
+		log.Println(err)
+		log.Fatal("firebase死んでるけど大丈夫そ？")
 	}
 	authMiddleware := middleware.NewAuth(auth)
 	

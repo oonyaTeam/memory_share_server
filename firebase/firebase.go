@@ -10,7 +10,7 @@ import (
 )
 
 func InitializeAppWithRefreshToken() (*auth.Client, error) {
-	opt := option.WithCredentialsFile("/home/oonya/heroku_apps/memory-share-firebase-adminsdk-zz9zi-4b08f04bd5.json")
+	opt := option.WithCredentialsFile("/home/oonya/heroku_apps/memory-share-firebase-adminsdk-zz9zi-4b08f04bd5.json")// TODO: deploy出来るようにする
 	config := &firebase.Config{ProjectID: "memory-share"}
 	app, err := firebase.NewApp(context.Background(), config, opt)
 	if err != nil {

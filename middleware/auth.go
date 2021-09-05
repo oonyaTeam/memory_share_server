@@ -23,12 +23,16 @@ func (auth *Auth) AuthRequired(c *gin.Context) {
 	idToken, err := getTokenFromHeader(c)
 	if err != nil {
 		log.Println(err)
-		panic("err")
+		c.JSON(401, gin.H{"message": err.Error()})
+		c.Abort()
+		return
 	}
 	token, err := auth.client.VerifyIDToken(context.Background(), idToken)
 	if err != nil {
 		log.Println(err)
-		panic("nilでにあ")
+		c.JSON(403, gin.H{"message": err.Error()})
+		c.Abort()
+		return
 	}
 	log.Printf("token: %v\n", token)
 }
