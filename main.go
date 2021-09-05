@@ -15,6 +15,7 @@ import (
 	_ "github.com/lib/pq"
 
 	"github.com/gin-contrib/cors"
+	"github.com/pkg/errors"
 )
 
 func dbFunc(db *sql.DB) gin.HandlerFunc {
@@ -114,15 +115,35 @@ func main() {
 	router.POST("/create-memory", memoryHandler.CreateMemory)
 
 	// authをするGroup
-	// authRouter := router.Group("/")
-	// {
-	// 	authRouter.GET("/get1", func(c *gin.Context) {
-	// 		c.JSON(http.StatusOK, gin.H{
-	// 			"msg": "get1",
-	// 		})
-	// 	})
-	// }
+	authRouter := router.Group("/", func (c *gin.Context)  {
+		log.Println("auth middle")
+		log.Println(c.GetHeader("Authorization"))
+		log.Println(getTokenFromHeader(c))
+	})
+	{
+		authRouter.GET("/get1", func(c *gin.Context) {
+			c.JSON(http.StatusOK, gin.H{
+				"msg": "get1",
+			})
+		})
+	}
 
 	router.GET("/db", dbFunc(db))
 	router.Run(":" + port)
+}
+
+func getTokenFromHeader(c *gin.Context) (string, error) {
+	const bearer string = "Bearer"
+
+	header := c.GetHeader("Authorization")
+	if header == "" {
+		return "", errors.New("authorization header not found")
+	}
+
+	l := len(bearer)
+	if len(header) > l+1 && header[:l] == bearer {
+		return header[l+1:], nil
+	}
+
+	return "", errors.New("authorization header format must be 'Bearer {token}'")
 }
