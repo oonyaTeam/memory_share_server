@@ -12,8 +12,9 @@ import (
 	_ "github.com/heroku/x/hmetrics/onload"
 
 	"database/sql"
-
 	_ "github.com/lib/pq"
+
+	"github.com/gin-contrib/cors"
 )
 
 func dbFunc(db *sql.DB) gin.HandlerFunc {
@@ -70,8 +71,29 @@ func main() {
 		log.Fatal("$PORT must be set")
 	}
 
-	router := gin.New()
-	router.Use(gin.Logger())
+	router := gin.Default()
+	// router.Use(gin.Logger())
+	router.Use(cors.New(cors.Config{
+        AllowMethods: []string{
+            "POST",
+            "GET",
+            "OPTIONS",
+            "PUT",
+            "DELETE",
+        },
+        AllowHeaders: []string{
+            "Access-Control-Allow-Headers",
+            "Content-Type",
+            "Content-Length",
+            "Accept-Encoding",
+            "Authorization",
+			"Origin",
+        },
+        AllowOrigins: []string{
+            "*",
+        },
+        MaxAge: 24 * time.Hour,
+    }))
 
 	router.GET("/", func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{
@@ -90,6 +112,16 @@ func main() {
 	router.GET("/mymemories", memoryHandler.GetMyMemories)
 
 	router.POST("/create-memory", memoryHandler.CreateMemory)
+
+	// authをするGroup
+	// authRouter := router.Group("/")
+	// {
+	// 	authRouter.GET("/get1", func(c *gin.Context) {
+	// 		c.JSON(http.StatusOK, gin.H{
+	// 			"msg": "get1",
+	// 		})
+	// 	})
+	// }
 
 	router.GET("/db", dbFunc(db))
 	router.Run(":" + port)
