@@ -9,13 +9,14 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/heroku/go-getting-started/handler"
+	"github.com/heroku/go-getting-started/firebase"
+	"github.com/heroku/go-getting-started/middleware"
 	_ "github.com/heroku/x/hmetrics/onload"
 
 	"database/sql"
 	_ "github.com/lib/pq"
 
 	"github.com/gin-contrib/cors"
-	"github.com/pkg/errors"
 )
 
 func dbFunc(db *sql.DB) gin.HandlerFunc {
@@ -109,17 +110,17 @@ func main() {
 	memoryHandler := handler.NewMemoryHandler(db)
 
 	router.GET("/memories", memoryHandler.GetMemories)
-
 	router.GET("/mymemories", memoryHandler.GetMyMemories)
-
 	router.POST("/create-memory", memoryHandler.CreateMemory)
-
+	
+	auth, err :=  firebase.InitializeAppWithRefreshToken()
+	if err != nil {
+		panic("firabase死んでるけど大丈夫そ？")
+	}
+	authMiddleware := middleware.NewAuth(auth)
+	
 	// authをするGroup
-	authRouter := router.Group("/", func (c *gin.Context)  {
-		log.Println("auth middle")
-		log.Println(c.GetHeader("Authorization"))
-		log.Println(getTokenFromHeader(c))
-	})
+	authRouter := router.Group("/", authMiddleware.AuthRequired)
 	{
 		authRouter.GET("/get1", func(c *gin.Context) {
 			c.JSON(http.StatusOK, gin.H{
@@ -130,20 +131,4 @@ func main() {
 
 	router.GET("/db", dbFunc(db))
 	router.Run(":" + port)
-}
-
-func getTokenFromHeader(c *gin.Context) (string, error) {
-	const bearer string = "Bearer"
-
-	header := c.GetHeader("Authorization")
-	if header == "" {
-		return "", errors.New("authorization header not found")
-	}
-
-	l := len(bearer)
-	if len(header) > l+1 && header[:l] == bearer {
-		return header[l+1:], nil
-	}
-
-	return "", errors.New("authorization header format must be 'Bearer {token}'")
 }
