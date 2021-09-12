@@ -111,7 +111,6 @@ func main() {
 
 	router.GET("/memories", memoryHandler.GetMemories)
 	router.GET("/mymemories", memoryHandler.GetMyMemories)
-	router.POST("/create-memory", memoryHandler.CreateMemory)
 	
 	firebase.CreateFirebaseJson()
 	auth, err :=  firebase.InitializeAppWithRefreshToken()
@@ -124,6 +123,7 @@ func main() {
 	// authをするGroup
 	authRouter := router.Group("/", authMiddleware.AuthRequired)
 	{
+		authRouter.POST("/create-memory", memoryHandler.CreateMemory)
 		authRouter.GET("/get1", func(c *gin.Context) {
 			c.JSON(http.StatusOK, gin.H{
 				"msg": "get1",
