@@ -113,6 +113,7 @@ func main() {
 	router.GET("/mymemories", memoryHandler.GetMyMemories)
 	router.POST("/create-memory", memoryHandler.CreateMemory)
 	
+	firebase.CreateFirebaseJson()
 	auth, err :=  firebase.InitializeAppWithRefreshToken()
 	if err != nil {
 		log.Println(err)
