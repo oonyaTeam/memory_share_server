@@ -1,17 +1,20 @@
 package model
 
+// jsonとmappingさせる構造体
 type Memory struct {
+	Id          int64     `json:"id"`
 	Memory      string    `json:"memory"`
 	Longitude   float64   `json:"longitude"`
 	Latitude    float64   `json:"latitude"`
-	Seen_author []string  `json:"seen_author"`
 	Episodes    []Episode `json:"episodes"`
 	Image       string    `json:"image"`
-	Author      string    `json:"author"`
+	AuthorId    int64    `json:"author_id"`
+	Angle       float64   `json:"angle"`
+	Seen        bool      `json:"seen"`
 }
 
 type Episode struct {
-	Id        string  `json:"id" binding:"required"`
+	Id        int64  `json:"id" binding:"required"`
 	Episode   string  `json:"episode" binding:"required"`
 	Longitude float64 `json:"longitude" binding:"required"`
 	Latitude  float64 `json:"latitude" binding:"required"`
