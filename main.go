@@ -27,11 +27,11 @@ func dbFunc(db *sql.DB) gin.HandlerFunc {
 			return
 		}
 
-		if _, err := db.Exec("INSERT INTO ticks VALUES (now())"); err != nil {
-			c.String(http.StatusInternalServerError,
-				fmt.Sprintf("Error incrementing tick: %q", err))
-			return
-		}
+		// if _, err := db.Exec("INSERT INTO ticks VALUES (now())"); err != nil {
+		// 	c.String(http.StatusInternalServerError,
+		// 		fmt.Sprintf("Error incrementing tick: %q", err))
+		// 	return
+		// }
 
 		rows, err := db.Query("SELECT tick FROM ticks")
 		if err != nil {
@@ -54,15 +54,13 @@ func dbFunc(db *sql.DB) gin.HandlerFunc {
 }
 
 func connectDB() (*sql.DB, error) {
-	// if e := os.Getenv("DEV"); e == "DEV" {
-	// 	db, err :=  sql.Open("postgres", "user= dbname=test password= sslmode=disable host=localhost ")
-	// 	return db, err;
-	// } else {
-	// 	db, err := sql.Open("postgres", os.Getenv("DATABASE_URL"))
-	// 	return db, err;
-	// }
-	db, err := sql.Open("postgres", os.Getenv("DATABASE_URL"))
-	return db, err
+	if e := os.Getenv("DEV"); e == "DEV" {
+		db, err :=  sql.Open("postgres", "user=postgres dbname=test password=Arrow0816 sslmode=disable host=localhost ")
+		return db, err;
+	} else {
+		db, err := sql.Open("postgres", os.Getenv("DATABASE_URL"))
+		return db, err;
+	}
 }
 
 func main() {
