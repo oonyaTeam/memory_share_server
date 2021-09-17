@@ -109,8 +109,6 @@ func main() {
 	}
 	memoryHandler := handler.NewMemoryHandler(db)
 
-	router.GET("/memories", memoryHandler.GetMemories)
-	router.GET("/mymemories", memoryHandler.GetMyMemories)
 	
 	firebase.CreateFirebaseJson()
 	auth, err :=  firebase.InitializeAppWithRefreshToken()
@@ -123,6 +121,8 @@ func main() {
 	// authをするGroup
 	authRouter := router.Group("/", authMiddleware.AuthRequired)
 	{
+		authRouter.GET("/memories", memoryHandler.GetMemories)
+		authRouter.GET("/mymemories", memoryHandler.GetMyMemories)
 		authRouter.POST("/create-memory", memoryHandler.CreateMemory)
 		authRouter.GET("/get1", func(c *gin.Context) {
 			c.JSON(http.StatusOK, gin.H{
