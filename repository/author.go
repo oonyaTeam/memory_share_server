@@ -14,3 +14,9 @@ func RegisterAuthor(db *sql.DB, uuid string) error {
 	// insert
 	return nil
 }
+
+func SeenMemory(db *sql.DB, uuid string, memoryId int64) error {
+	log.Println("seen memory")
+	// insert
+	return nil
+}

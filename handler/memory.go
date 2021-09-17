@@ -54,6 +54,7 @@ func (m *MemoryHandler) CreateMemory(c *gin.Context) {
 		})
 		return
 	}
+	// TODO: authorId, SeenプロパティはBindされないから埋める
 
 	err := repository.CreateMemory(m.db, mb)
 	if err != nil {
