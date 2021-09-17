@@ -108,6 +108,7 @@ func main() {
 		log.Fatalf("Error opening database: %q", err)
 	}
 	memoryHandler := handler.NewMemoryHandler(db)
+	authorHandler := handler.NewAuthorHandler(db)
 
 	
 	firebase.CreateFirebaseJson()
@@ -124,6 +125,8 @@ func main() {
 		authRouter.GET("/memories", memoryHandler.GetMemories)
 		authRouter.GET("/mymemories", memoryHandler.GetMyMemories)
 		authRouter.POST("/create-memory", memoryHandler.CreateMemory)
+		authRouter.POST("/author", authorHandler.RegisterAuthor)
+		
 		authRouter.GET("/get1", func(c *gin.Context) {
 			c.JSON(http.StatusOK, gin.H{
 				"msg": "get1",

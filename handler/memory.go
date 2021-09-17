@@ -35,8 +35,7 @@ func (m *MemoryHandler) GetMemories(c *gin.Context) {
 
 // func GetMyMemories(c *gin.Context) {
 func (m *MemoryHandler) GetMyMemories(c *gin.Context) {
-	// uuid := c.Query("uuid")
-	uuid := "uuid"
+	uuid := "uuid"// TODO: uuidはmiddlewareでsetしたのを使う
 	memories, err := repository.GetMyMemories(m.db, uuid)
 	if err != nil {
 		panic("err")
