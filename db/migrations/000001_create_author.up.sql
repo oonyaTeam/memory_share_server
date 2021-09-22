@@ -1,0 +1,4 @@
+CREATE TABLE IF NOT EXISTS authors(
+   id serial PRIMARY KEY,
+   uuid VARCHAR (256) UNIQUE NOT NULL
+);
