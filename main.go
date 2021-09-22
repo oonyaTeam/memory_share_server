@@ -55,7 +55,8 @@ func dbFunc(db *sql.DB) gin.HandlerFunc {
 
 func connectDB() (*sql.DB, error) {
 	if e := os.Getenv("DEV"); e == "DEV" {
-		db, err :=  sql.Open("postgres", "user=postgres dbname=test password=Arrow0816 sslmode=disable host=localhost ")
+		db, err := sql.Open("postgres", os.Getenv("POSTGRESQL_URL"))
+		// db, err :=  sql.Open("postgres", "user=postgres dbname=test password=Arrow0816 sslmode=disable host=localhost ")
 		return db, err;
 	} else {
 		db, err := sql.Open("postgres", os.Getenv("DATABASE_URL"))
