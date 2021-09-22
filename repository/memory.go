@@ -3,14 +3,13 @@ package repository
 import (
 	"github.com/heroku/go-getting-started/model"
 
-	"database/sql"
-
+	"github.com/jmoiron/sqlx"
 	_ "github.com/lib/pq"
 
 	"log"
 )
 
-func GetMemories(db *sql.DB) ([]model.Memory, error) {
+func GetMemories(db *sqlx.DB) ([]model.Memory, error) {
 	log.Print("This is repository\n\n\n")
 
 	e1 := model.Episode{
@@ -48,7 +47,7 @@ func GetMemories(db *sql.DB) ([]model.Memory, error) {
 	return []model.Memory{m, m2}, nil
 }
 
-func GetMyMemories(db *sql.DB, uuid string) ([]model.Memory, error) {
+func GetMyMemories(db *sqlx.DB, uuid string) ([]model.Memory, error) {
 	e1 := model.Episode{
 		Id:        1,
 		Episode:   "subepisode 1Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.",
@@ -85,7 +84,7 @@ func GetMyMemories(db *sql.DB, uuid string) ([]model.Memory, error) {
 	return []model.Memory{m, m2}, nil
 }
 
-func CreateMemory(db *sql.DB, m model.Memory) error {
+func CreateMemory(db *sqlx.DB, m model.Memory) error {
 	// insert
 	return nil
 }

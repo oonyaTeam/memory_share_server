@@ -13,13 +13,13 @@ import (
 	"github.com/heroku/go-getting-started/middleware"
 	_ "github.com/heroku/x/hmetrics/onload"
 
-	"database/sql"
+	"github.com/jmoiron/sqlx"
 	_ "github.com/lib/pq"
 
 	"github.com/gin-contrib/cors"
 )
 
-func dbFunc(db *sql.DB) gin.HandlerFunc {
+func dbFunc(db *sqlx.DB) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		if _, err := db.Exec("CREATE TABLE IF NOT EXISTS ticks (tick timestamp)"); err != nil {
 			c.String(http.StatusInternalServerError,
@@ -53,13 +53,13 @@ func dbFunc(db *sql.DB) gin.HandlerFunc {
 	}
 }
 
-func connectDB() (*sql.DB, error) {
+func connectDB() (*sqlx.DB, error) {
 	if e := os.Getenv("DEV"); e == "DEV" {
-		db, err := sql.Open("postgres", os.Getenv("POSTGRESQL_URL"))
+		db, err := sqlx.Open("postgres", os.Getenv("POSTGRESQL_URL"))
 		// db, err :=  sql.Open("postgres", "user=postgres dbname=test password=Arrow0816 sslmode=disable host=localhost ")
 		return db, err;
 	} else {
-		db, err := sql.Open("postgres", os.Getenv("DATABASE_URL"))
+		db, err := sqlx.Open("postgres", os.Getenv("DATABASE_URL"))
 		return db, err;
 	}
 }

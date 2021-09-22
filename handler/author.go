@@ -5,21 +5,18 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-
-	// "github.com/heroku/go-getting-started/model"
 	"github.com/heroku/go-getting-started/repository"
 
-	"database/sql"
-
+	"github.com/jmoiron/sqlx"
 	_ "github.com/lib/pq"
 )
 
 
 type AuthorHandler struct {
-	db *sql.DB
+	db *sqlx.DB
 }
 
-func NewAuthorHandler(db *sql.DB) *AuthorHandler {
+func NewAuthorHandler(db *sqlx.DB) *AuthorHandler {
 	return &AuthorHandler{
 		db: db,
 	}

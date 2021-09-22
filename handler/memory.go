@@ -8,16 +8,15 @@ import (
 	"github.com/heroku/go-getting-started/model"
 	"github.com/heroku/go-getting-started/repository"
 
-	"database/sql"
-
+	"github.com/jmoiron/sqlx"
 	_ "github.com/lib/pq"
 )
 
 type MemoryHandler struct {
-	db *sql.DB
+	db *sqlx.DB
 }
 
-func NewMemoryHandler(db *sql.DB) *MemoryHandler {
+func NewMemoryHandler(db *sqlx.DB) *MemoryHandler {
 	return &MemoryHandler{
 		db: db,
 	}
