@@ -10,7 +10,8 @@ import (
 func RegisterAuthor(db *sqlx.DB, uuid string) error {
 	log.Println("register author")
 	// insert
-	return nil
+	_, err := db.Exec(`insert into authors(uuid) values ($1)`, uuid)
+	return err
 }
 
 func SeenMemory(db *sqlx.DB, uuid string, memoryId int64) error {

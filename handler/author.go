@@ -26,7 +26,10 @@ func NewAuthorHandler(db *sqlx.DB) *AuthorHandler {
 func (m *AuthorHandler) RegisterAuthor(c *gin.Context) {
 	err := repository.RegisterAuthor(m.db, "uuid")// TODO: uuidはmiddlewareでsetしたのを使う
 	if err != nil {
-		panic("ee") // TODO: エラーハンドリングは適切に
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"msg": err.Error(),
+		})
+		return
 	}
 	c.JSON(http.StatusCreated, gin.H{
 		"msg": "OK",
@@ -46,7 +49,10 @@ func (m *AuthorHandler) SeenMemory(c *gin.Context) {
 	log.Printf("memoryId struct: %v", memoryId)
 	err := repository.SeenMemory(m.db, "uuid", memoryId.MemoryId)// TODO: uuidはmiddlewareでsetしたのを使う
 	if err != nil {
-		panic("ee") // TODO: エラーハンドリングは適切に
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"msg": err.Error(),
+		})
+		return
 	}
 	c.JSON(http.StatusCreated, gin.H{
 		"msg": "OK",
