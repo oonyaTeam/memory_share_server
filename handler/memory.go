@@ -64,7 +64,7 @@ func (m *MemoryHandler) CreateMemory(c *gin.Context) {
 
 	err := repository.CreateMemory(m.db, mb)
 	if err != nil {
-		panic("eerr")
+		panic(err)
 	}
 
 	log.Println("bind memory=")

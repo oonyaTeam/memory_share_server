@@ -85,6 +85,26 @@ func GetMyMemories(db *sqlx.DB, uuid string) ([]model.Memory, error) {
 }
 
 func CreateMemory(db *sqlx.DB, m model.Memory) error {
-	// insert
-	return nil
+	tx := db.MustBegin()
+	
+	memory_stmt := `insert into memories(memory, image, longitude, latitude, author_id, angle) values ($1, $2, $3, $4, $5, $6)
+	RETURNING id`
+	var id int
+	err := tx.QueryRow(memory_stmt, m.Memory, m.Image, m.Longitude, m.Latitude, m.AuthorId, m.Angle).Scan(&id)
+	if err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	episode_stmt := `insert into episodes(episode, longitude, latitude, memory_id) values ($1, $2, $3, $4)`
+	for _, e := range m.Episodes {
+		_, err := tx.Exec(episode_stmt, e.Episode, e.Longitude, e.Latitude, id)
+		if err != nil {
+			tx.Rollback()
+			return err
+		}
+	}
+
+	err = tx.Commit()
+	return err
 }
