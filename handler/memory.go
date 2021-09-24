@@ -3,6 +3,7 @@ package handler
 import (
 	"log"
 	"net/http"
+	"github.com/heroku/go-getting-started/httputil"
 
 	"github.com/gin-gonic/gin"
 	"github.com/heroku/go-getting-started/model"
@@ -53,7 +54,13 @@ func (m *MemoryHandler) CreateMemory(c *gin.Context) {
 		})
 		return
 	}
-	// TODO: authorId, SeenプロパティはBindされないから埋める
+
+	uid, ok := c.Get("UID")
+	if !ok {
+		panic("not exist UID")
+	}
+	authorId := httputil.GetUidFromToken(m.db, uid)
+	mb.AuthorId = authorId
 
 	err := repository.CreateMemory(m.db, mb)
 	if err != nil {

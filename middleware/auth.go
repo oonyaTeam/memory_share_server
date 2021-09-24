@@ -34,7 +34,8 @@ func (auth *Auth) AuthRequired(c *gin.Context) {
 		c.Abort()
 		return
 	}
-	log.Printf("token: %v\n", token)
+	log.Printf("UID: %v\n", token.UID)
+	c.Set("UID", token.UID)
 }
 
 func getTokenFromHeader(c *gin.Context) (string, error) {
