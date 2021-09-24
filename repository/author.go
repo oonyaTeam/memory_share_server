@@ -9,8 +9,12 @@ import (
 
 func RegisterAuthor(db *sqlx.DB, uuid string) error {
 	log.Println("register author")
-	// TODO: すでにある場合実行しない
-	_, err := db.Exec(`insert into authors(uuid) values ($1)`, uuid)
+	stmt := `insert into authors(uuid)
+			select $1
+			where not exists (
+				select uuid from authors where uuid=$2
+			)`
+	_, err := db.Exec(stmt, uuid, uuid)
 	return err
 }
 

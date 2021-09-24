@@ -24,7 +24,11 @@ func NewAuthorHandler(db *sqlx.DB) *AuthorHandler {
 
 
 func (m *AuthorHandler) RegisterAuthor(c *gin.Context) {
-	err := repository.RegisterAuthor(m.db, "uuid")// TODO: uuidはmiddlewareでsetしたのを使う
+	uid, ok := c.Get("UID")
+	if !ok {
+		panic("not exist UID")
+	}
+	err := repository.RegisterAuthor(m.db, uid.(string))
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"msg": err.Error(),
