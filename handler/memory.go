@@ -26,19 +26,19 @@ func NewMemoryHandler(db *sqlx.DB) *MemoryHandler {
 func (m *MemoryHandler) GetMemories(c *gin.Context) {
 	memories, err := repository.GetMemories(m.db)
 	if err != nil {
-		panic("ee") // TODO: エラーハンドリングは適切に
+		panic(err) // TODO: エラーハンドリングは適切に
 	}
+	// TODO: Seenを埋める
 	c.JSON(http.StatusOK, gin.H{
 		"memories": memories,
 	})
 }
 
-// func GetMyMemories(c *gin.Context) {
 func (m *MemoryHandler) GetMyMemories(c *gin.Context) {
 	uuid := "uuid"// TODO: uuidはmiddlewareでsetしたのを使う
 	memories, err := repository.GetMyMemories(m.db, uuid)
 	if err != nil {
-		panic("err")
+		panic(err)
 	}
 
 	c.JSON(http.StatusOK, gin.H{
