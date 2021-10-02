@@ -113,9 +113,10 @@ func CreateMemory(
 }
 
 func SeenMemoryIds(db *sqlx.DB, uid string) ([]int64, error) {
-	// var memoryIds []int64
-	// stmt := `select memory_id from author_seen_memory where author_id=$1 `
-	// err := db.Select(&memoryIds, stmt, uid)
-	// return memoryIds, err
-	return []int64{1, 2, 3}, nil
+	var memoryIds []int64
+	stmt := `select memory_id from author_seen_memory
+			join authors on author_seen_memory.author_id = authors.id
+			where authors.uuid = $1`
+	err := db.Select(&memoryIds, stmt, uid)
+	return memoryIds, err
 }
