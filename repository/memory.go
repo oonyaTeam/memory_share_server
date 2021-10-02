@@ -27,7 +27,11 @@ func GetMemories(db *sqlx.DB) ([]model.Memory, error) {
 		if err != nil {
 			return nil, err
 		}
-		memories[i].Episodes = episodes
+		if len(episodes) == 0 {
+			memories[i].Episodes = make([]model.Episode, 0)
+		} else {
+			memories[i].Episodes = episodes
+		}
 	}
 	log.Println(memories)
 	
