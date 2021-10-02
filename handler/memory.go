@@ -87,17 +87,24 @@ func (m *MemoryHandler) CreateMemory(c *gin.Context) {
 		return
 	}
 
-	// authorに対するerrとmemoryに対するerrを分けたいのでauthorIdを取得する処理はCreateMemoryとは分けた
-	authorId, err := httputil.GetAuthorIdFromToken(m.db, c)
+	uid, err := httputil.GetUidFromToken(c)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"msg": err.Error(),
 		})
 		return
 	}
-	mb.AuthorId = authorId
 
-	err = repository.CreateMemory(m.db, mb)
+	err = repository.CreateMemory(
+		m.db,
+		mb.Memory,
+		mb.Image,
+		mb.Longitude,
+		mb.Latitude,
+		mb.Angle,
+		mb.Episodes,
+		uid,
+	)
 	if err != nil {
 		panic(err)
 	}
