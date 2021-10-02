@@ -43,7 +43,7 @@ func (m *MemoryHandler) GetMemories(c *gin.Context) {
 		})
 		return
 	}
-	// 見たmemory idのlistを返し、include?する
+	
 	for i, memory := range memories {
 		if contains(seenMemoryList, memory.Id) {
 			memories[i].Seen = true
