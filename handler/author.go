@@ -51,7 +51,12 @@ func (m *AuthorHandler) SeenMemory(c *gin.Context) {
 		return
 	}
 	log.Printf("memoryId struct: %v", memoryId)
-	err := repository.SeenMemory(m.db, "uuid", memoryId.MemoryId)// TODO: uuidはmiddlewareでsetしたのを使う
+	
+	uid, ok := c.Get("UID")
+	if !ok {
+		panic("not exist UID")
+	}
+	err := repository.SeenMemory(m.db, uid.(string), memoryId.MemoryId)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"msg": err.Error(),

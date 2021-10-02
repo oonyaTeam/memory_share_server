@@ -20,8 +20,10 @@ func RegisterAuthor(db *sqlx.DB, uuid string) error {
 
 func SeenMemory(db *sqlx.DB, uuid string, memoryId int64) error {
 	log.Println("seen memory")
-	// insert
-	return nil
+	stmt := `insert into author_seen_memory(memory_id, author_id)
+			select $1, id from authors where uuid = $2`
+	_, err := db.Exec(stmt, memoryId, uuid)
+	return err
 }
 
 func GetAuthorId(db *sqlx.DB, uuid string) (int64, error) {
