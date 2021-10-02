@@ -29,10 +29,39 @@ func (m *MemoryHandler) GetMemories(c *gin.Context) {
 		panic(err) // TODO: エラーハンドリングは適切に
 	}
 	// TODO: Seenを埋める
+	authorId, err := httputil.GetAuthorIdFromToken(m.db, c)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"msg": err.Error(),
+		})
+		return
+	}
+	seenMemoryList, err := repository.SeenMemoryIds(m.db, authorId)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"msg": err.Error(),
+		})
+		return
+	}
+	// 見たmemory idのlistを返し、include?する
+	for i, memory := range memories {
+		if contains(seenMemoryList, memory.Id) {
+			memories[i].Seen = true
+		}
+	}
 
 	c.JSON(http.StatusOK, gin.H{
 		"memories": memories,
 	})
+}
+
+func contains(s []int64, e int64) bool {
+	for _, v := range s {
+		if e == v {
+			return true
+		}
+	}
+	return false
 }
 
 func (m *MemoryHandler) GetMyMemories(c *gin.Context) {

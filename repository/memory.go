@@ -99,3 +99,7 @@ func CreateMemory(db *sqlx.DB, m model.Memory) error {
 	err = tx.Commit()
 	return err
 }
+
+func SeenMemoryIds(db *sqlx.DB, authorId int64) ([]int64, error) {
+	return []int64{1, 2}, nil
+}
