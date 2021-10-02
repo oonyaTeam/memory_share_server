@@ -66,7 +66,7 @@ func (m *MemoryHandler) CreateMemory(c *gin.Context) {
 		return
 	}
 
-	_, err := httputil.GetUidFromToken(c)
+	uid, err := httputil.GetUidFromToken(c)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"msg": err.Error(),
@@ -74,19 +74,17 @@ func (m *MemoryHandler) CreateMemory(c *gin.Context) {
 		return
 	}
 
-	// err = repository.CreateMemory(
-	// 	m.db,
-	// 	mb.Memory,
-	// 	mb.Image,
-	// 	mb.Longitude,
-	// 	mb.Latitude,
-	// 	mb.Angle,
-	// 	mb.Episodes,
-	// 	uid,
-	// )
-	err = m.memoryUseCase.CreateMemories()
+	err = m.memoryUseCase.CreateMemories(
+		mb.Memory,
+		mb.Image,
+		mb.Longitude,
+		mb.Latitude,
+		mb.Angle,
+		mb.Episodes,
+		uid,
+	)
 	if err != nil {
-		panic(err)
+		panic(err)// TODO: error handling
 	}
 
 	log.Println("bind memory=")

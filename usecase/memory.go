@@ -46,6 +46,17 @@ func contains(s []int64, e int64) bool {
 	return false
 }
 
-func (m *MemoryUseCase) CreateMemories() (error) {
-	return nil
+func (m *MemoryUseCase) CreateMemories(
+	memory string,
+	img_url string,
+	longitude float64,
+	latitude float64,
+	angle float64,
+	episodes []model.Episode,
+	uid string,
+) (error) {
+	err := repository.CreateMemory(
+		m.db, memory, img_url, longitude, latitude, angle, episodes, uid,
+	)
+	return err
 }
