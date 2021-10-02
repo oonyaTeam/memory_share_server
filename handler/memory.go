@@ -29,6 +29,7 @@ func (m *MemoryHandler) GetMemories(c *gin.Context) {
 		panic(err) // TODO: エラーハンドリングは適切に
 	}
 	// TODO: Seenを埋める
+
 	c.JSON(http.StatusOK, gin.H{
 		"memories": memories,
 	})
@@ -55,14 +56,17 @@ func (m *MemoryHandler) CreateMemory(c *gin.Context) {
 		return
 	}
 
-	uid, ok := c.Get("UID")
-	if !ok {
-		panic("not exist UID")
+	// authorに対するerrとmemoryに対するerrを分けたいのでauthorIdを取得する処理はCreateMemoryとは分けた
+	authorId, err := httputil.GetAuthorIdFromToken(m.db, c)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"msg": err.Error(),
+		})
+		return
 	}
-	authorId := httputil.GetUidFromToken(m.db, uid)
 	mb.AuthorId = authorId
 
-	err := repository.CreateMemory(m.db, mb)
+	err = repository.CreateMemory(m.db, mb)
 	if err != nil {
 		panic(err)
 	}
