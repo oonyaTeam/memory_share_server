@@ -2,18 +2,17 @@ package httputil
 
 import (
 	"errors"
-
 	"github.com/gin-gonic/gin"
-	"github.com/heroku/go-getting-started/repository"
-	"github.com/jmoiron/sqlx"
 )
 
-func GetAuthorIdFromToken(db *sqlx.DB, c *gin.Context) (int64, error) {
+func GetUidFromToken(c *gin.Context) (string, error) {
 	v, ok := c.Get("UID")
 	if !ok {
-		return 0, errors.New("not exist UID")
+		return "", errors.New("not exist UID")
 	}
-	uid := v.(string)
-	author_id, err := repository.GetAuthorId(db, uid)
-	return author_id, err
+	uid, ok := v.(string)
+	if !ok {
+		return "", errors.New("cannot cast UID to string, uid must be string")
+	}
+	return uid, nil
 }

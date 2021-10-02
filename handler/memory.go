@@ -24,19 +24,21 @@ func NewMemoryHandler(db *sqlx.DB) *MemoryHandler {
 }
 
 func (m *MemoryHandler) GetMemories(c *gin.Context) {
+	uid, err := httputil.GetUidFromToken(c)
+	if err != nil {
+		// clientが悪ければmiddlewareで弾かれるはずだから500
+		c.JSON(http.StatusInternalServerError, gin.H{// TODO: 本当にstatus500でいい？
+			"msg": err.Error(),
+		})
+		return
+	}
+
 	memories, err := repository.GetMemories(m.db)
 	if err != nil {
 		panic(err) // TODO: エラーハンドリングは適切に
 	}
 	// TODO: Seenを埋める
-	authorId, err := httputil.GetAuthorIdFromToken(m.db, c)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"msg": err.Error(),
-		})
-		return
-	}
-	seenMemoryList, err := repository.SeenMemoryIds(m.db, authorId)
+	seenMemoryList, err := repository.SeenMemoryIds(m.db, uid)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"msg": err.Error(),

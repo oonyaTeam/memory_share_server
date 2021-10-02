@@ -100,9 +100,10 @@ func CreateMemory(db *sqlx.DB, m model.Memory) error {
 	return err
 }
 
-func SeenMemoryIds(db *sqlx.DB, authorId int64) ([]int64, error) {
-	var memoryIds []int64
-	stmt := `select memory_id from author_seen_memory where author_id=$1 `
-	err := db.Select(&memoryIds, stmt, authorId)
-	return memoryIds, err
+func SeenMemoryIds(db *sqlx.DB, uid string) ([]int64, error) {
+	// var memoryIds []int64
+	// stmt := `select memory_id from author_seen_memory where author_id=$1 `
+	// err := db.Select(&memoryIds, stmt, uid)
+	// return memoryIds, err
+	return []int64{1, 2, 3}, nil
 }
