@@ -8,9 +8,10 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
-	"github.com/heroku/go-getting-started/handler"
 	"github.com/heroku/go-getting-started/firebase"
+	"github.com/heroku/go-getting-started/handler"
 	"github.com/heroku/go-getting-started/middleware"
+	"github.com/heroku/go-getting-started/usecase"
 	_ "github.com/heroku/x/hmetrics/onload"
 
 	"github.com/jmoiron/sqlx"
@@ -106,7 +107,8 @@ func main() {
 	if err != nil {
 		log.Fatalf("Error opening database: %q", err)
 	}
-	memoryHandler := handler.NewMemoryHandler(db)
+	memoryUseCase := usecase.NewMemoryUseCase(db)
+	memoryHandler := handler.NewMemoryHandler(memoryUseCase)
 	authorHandler := handler.NewAuthorHandler(db)
 
 	
@@ -127,12 +129,6 @@ func main() {
 
 		authRouter.POST("/author", authorHandler.RegisterAuthor)
 		authRouter.POST("/seen-memory", authorHandler.SeenMemory)
-		
-		authRouter.GET("/get1", func(c *gin.Context) {
-			c.JSON(http.StatusOK, gin.H{
-				"msg": "get1",
-			})
-		})
 	}
 
 	router.GET("/db", dbFunc(db))

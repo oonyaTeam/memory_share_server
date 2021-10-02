@@ -7,19 +7,18 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/heroku/go-getting-started/model"
-	"github.com/heroku/go-getting-started/repository"
-
-	"github.com/jmoiron/sqlx"
-	_ "github.com/lib/pq"
+	"github.com/heroku/go-getting-started/usecase"
 )
 
 type MemoryHandler struct {
-	db *sqlx.DB
+	memoryUseCase *usecase.MemoryUseCase
 }
 
-func NewMemoryHandler(db *sqlx.DB) *MemoryHandler {
+func NewMemoryHandler(
+	memoryUseCase *usecase.MemoryUseCase,
+) *MemoryHandler {
 	return &MemoryHandler{
-		db: db,
+		memoryUseCase: memoryUseCase,
 	}
 }
 
@@ -33,50 +32,30 @@ func (m *MemoryHandler) GetMemories(c *gin.Context) {
 		return
 	}
 
-	memories, err := repository.GetMemories(m.db)
-	if err != nil {
-		panic(err) // TODO: エラーハンドリングは適切に
-	}
-	// TODO: Seenを埋める
-	seenMemoryList, err := repository.SeenMemoryIds(m.db, uid)
+	memories, err := m.memoryUseCase.GetMemories(uid)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"msg": err.Error(),
 		})
 		return
 	}
-	
-	for i, memory := range memories {
-		if contains(seenMemoryList, memory.Id) {
-			memories[i].Seen = true
-		}
-	}
 
 	c.JSON(http.StatusOK, gin.H{
 		"memories": memories,
 	})
 }
 
-func contains(s []int64, e int64) bool {
-	for _, v := range s {
-		if e == v {
-			return true
-		}
-	}
-	return false
-}
+// func (m *MemoryHandler) GetMyMemories(c *gin.Context) {
+// 	uuid := "uuid"// TODO: uuidはmiddlewareでsetしたのを使う
+// 	memories, err := repository.GetMyMemories(m.db, uuid)
+// 	if err != nil {
+// 		panic(err)
+// 	}
 
-func (m *MemoryHandler) GetMyMemories(c *gin.Context) {
-	uuid := "uuid"// TODO: uuidはmiddlewareでsetしたのを使う
-	memories, err := repository.GetMyMemories(m.db, uuid)
-	if err != nil {
-		panic(err)
-	}
-
-	c.JSON(http.StatusOK, gin.H{
-		"memories": memories,
-	})
-}
+// 	c.JSON(http.StatusOK, gin.H{
+// 		"memories": memories,
+// 	})
+// }
 
 func (m *MemoryHandler) CreateMemory(c *gin.Context) {
 	var mb model.Memory
@@ -87,7 +66,7 @@ func (m *MemoryHandler) CreateMemory(c *gin.Context) {
 		return
 	}
 
-	uid, err := httputil.GetUidFromToken(c)
+	_, err := httputil.GetUidFromToken(c)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"msg": err.Error(),
@@ -95,16 +74,17 @@ func (m *MemoryHandler) CreateMemory(c *gin.Context) {
 		return
 	}
 
-	err = repository.CreateMemory(
-		m.db,
-		mb.Memory,
-		mb.Image,
-		mb.Longitude,
-		mb.Latitude,
-		mb.Angle,
-		mb.Episodes,
-		uid,
-	)
+	// err = repository.CreateMemory(
+	// 	m.db,
+	// 	mb.Memory,
+	// 	mb.Image,
+	// 	mb.Longitude,
+	// 	mb.Latitude,
+	// 	mb.Angle,
+	// 	mb.Episodes,
+	// 	uid,
+	// )
+	err = m.memoryUseCase.CreateMemories()
 	if err != nil {
 		panic(err)
 	}
