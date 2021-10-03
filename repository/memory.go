@@ -5,8 +5,6 @@ import (
 
 	"github.com/jmoiron/sqlx"
 	_ "github.com/lib/pq"
-
-	"log"
 )
 
 func GetMemories(db *sqlx.DB) ([]model.Memory, error) {
@@ -17,19 +15,10 @@ func GetMemories(db *sqlx.DB) ([]model.Memory, error) {
 	if err != nil {
 		return nil, err
 	}
-	log.Println(memories)
 
-	for i, memory := range memories {
-		var episodes []model.Episode
-		err = db.Select(&episodes, `select id, episode, longitude, latitude from episodes where memory_id = $1`, memory.Id)
-		if err != nil {
-			return nil, err
-		}
-		if len(episodes) == 0 {
-			memories[i].Episodes = make([]model.Episode, 0)
-		} else {
-			memories[i].Episodes = episodes
-		}
+	err = FillMemoriesEpisodes(db, memories)
+	if err != nil {
+		return nil, err
 	}
 	
 	return memories, nil
@@ -44,13 +33,22 @@ func GetMyMemories(db *sqlx.DB, uid string) ([]model.Memory, error) {
 	if err != nil {
 		return nil, err
 	}
-	log.Println(memories)
 
+	err = FillMemoriesEpisodes(db, memories)
+	if err != nil {
+		return nil, err
+	}
+	
+	return memories, nil
+}
+
+//TODO: sliceが配列のポインターを返してるから*[]momeryではく[]memory, 理解が浅いので見返したい
+func FillMemoriesEpisodes(db *sqlx.DB, memories []model.Memory) (error) {
 	for i, memory := range memories {
 		var episodes []model.Episode
-		err = db.Select(&episodes, `select id, episode, longitude, latitude from episodes where memory_id = $1`, memory.Id)
+		err := db.Select(&episodes, `select id, episode, longitude, latitude from episodes where memory_id = $1`, memory.Id)
 		if err != nil {
-			return nil, err
+			return err
 		}
 		if len(episodes) == 0 {
 			memories[i].Episodes = make([]model.Episode, 0)
@@ -58,8 +56,7 @@ func GetMyMemories(db *sqlx.DB, uid string) ([]model.Memory, error) {
 			memories[i].Episodes = episodes
 		}
 	}
-	
-	return memories, nil
+	return nil
 }
 
 func CreateMemory(
