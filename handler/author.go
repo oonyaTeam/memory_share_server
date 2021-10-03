@@ -6,6 +6,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/heroku/go-getting-started/repository"
+	"github.com/heroku/go-getting-started/httputil"
 
 	"github.com/jmoiron/sqlx"
 	_ "github.com/lib/pq"
@@ -24,11 +25,15 @@ func NewAuthorHandler(db *sqlx.DB) *AuthorHandler {
 
 
 func (m *AuthorHandler) RegisterAuthor(c *gin.Context) {
-	uid, ok := c.Get("UID")
-	if !ok {
-		panic("not exist UID")
+	uid, err := httputil.GetUidFromToken(c)
+	if err != nil {
+		// clientが悪ければmiddlewareで弾かれるはずだから500
+		c.JSON(http.StatusInternalServerError, gin.H{// TODO: 本当にstatus500でいい？
+			"msg": err.Error(),
+		})
+		return
 	}
-	err := repository.RegisterAuthor(m.db, uid.(string))
+	err = repository.RegisterAuthor(m.db, uid)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"msg": err.Error(),
@@ -52,11 +57,15 @@ func (m *AuthorHandler) SeenMemory(c *gin.Context) {
 	}
 	log.Printf("memoryId struct: %v", memoryId)
 	
-	uid, ok := c.Get("UID")
-	if !ok {
-		panic("not exist UID")
+	uid, err := httputil.GetUidFromToken(c)
+	if err != nil {
+		// clientが悪ければmiddlewareで弾かれるはずだから500
+		c.JSON(http.StatusInternalServerError, gin.H{// TODO: 本当にstatus500でいい？
+			"msg": err.Error(),
+		})
+		return
 	}
-	err := repository.SeenMemory(m.db, uid.(string), memoryId.MemoryId)
+	err = repository.SeenMemory(m.db, uid, memoryId.MemoryId)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"msg": err.Error(),
