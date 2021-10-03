@@ -23,7 +23,7 @@ func GetMemories(db *sqlx.DB) ([]model.Memory, error) {
 	
 	return memories, nil
 }
-
+// TODO:responseのseen消したい
 func GetMyMemories(db *sqlx.DB, uid string) ([]model.Memory, error) {
 	var memories []model.Memory
 	stmt := `select memories.id, memory, longitude, latitude, image, author_id, angle
