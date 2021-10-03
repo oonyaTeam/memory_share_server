@@ -45,17 +45,27 @@ func (m *MemoryHandler) GetMemories(c *gin.Context) {
 	})
 }
 
-// func (m *MemoryHandler) GetMyMemories(c *gin.Context) {
-// 	uuid := "uuid"// TODO: uuidはmiddlewareでsetしたのを使う
-// 	memories, err := repository.GetMyMemories(m.db, uuid)
-// 	if err != nil {
-// 		panic(err)
-// 	}
+func (m *MemoryHandler) GetMyMemories(c *gin.Context) {
+	uid, err := httputil.GetUidFromToken(c)
+	if err != nil {
+		// clientが悪ければmiddlewareで弾かれるはずだから500
+		c.JSON(http.StatusInternalServerError, gin.H{// TODO: 本当にstatus500でいい？
+			"msg": err.Error(),
+		})
+		return
+	}
+	memories, err := m.memoryUseCase.GetMyMemories(uid)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"msg": err.Error(),
+		})
+		return
+	}
 
-// 	c.JSON(http.StatusOK, gin.H{
-// 		"memories": memories,
-// 	})
-// }
+	c.JSON(http.StatusOK, gin.H{
+		"memories": memories,
+	})
+}
 
 func (m *MemoryHandler) CreateMemory(c *gin.Context) {
 	var mb model.Memory

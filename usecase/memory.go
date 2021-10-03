@@ -36,7 +36,6 @@ func (m *MemoryUseCase) GetMemories(uid string) ([]model.Memory, error) {
 	}
 	return memories, nil
 }
-
 func contains(s []int64, e int64) bool {
 	for _, v := range s {
 		if e == v {
@@ -44,6 +43,15 @@ func contains(s []int64, e int64) bool {
 		}
 	}
 	return false
+}
+
+func (m *MemoryUseCase) GetMyMemories(uid string) ([]model.Memory, error) {
+	memories, err := repository.GetMyMemories(m.db, uid)
+	if err != nil {
+		return nil, err
+	}
+
+	return memories, nil
 }
 
 func (m *MemoryUseCase) CreateMemories(

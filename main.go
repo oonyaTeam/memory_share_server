@@ -125,7 +125,7 @@ func main() {
 	authRouter := router.Group("/", authMiddleware.AuthRequired)
 	{
 		authRouter.GET("/memories", memoryHandler.GetMemories)
-		authRouter.GET("/mymemories", memoryHandler.GetMemories)
+		authRouter.GET("/mymemories", memoryHandler.GetMyMemories)
 		authRouter.POST("/create-memory", memoryHandler.CreateMemory)
 
 		authRouter.POST("/author", authorHandler.RegisterAuthor)
