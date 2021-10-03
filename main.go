@@ -109,7 +109,8 @@ func main() {
 	}
 	memoryUseCase := usecase.NewMemoryUseCase(db)
 	memoryHandler := handler.NewMemoryHandler(memoryUseCase)
-	authorHandler := handler.NewAuthorHandler(db)
+	authorUseCase := usecase.NewAuthorUseCase(db)
+	authorHandler := handler.NewAuthorHandler(authorUseCase)
 
 	
 	firebase.CreateFirebaseJson()

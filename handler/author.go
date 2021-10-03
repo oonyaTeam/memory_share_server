@@ -5,21 +5,19 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/heroku/go-getting-started/repository"
 	"github.com/heroku/go-getting-started/httputil"
-
-	"github.com/jmoiron/sqlx"
-	_ "github.com/lib/pq"
+	"github.com/heroku/go-getting-started/usecase"
 )
 
-
 type AuthorHandler struct {
-	db *sqlx.DB
+	authorUseCase *usecase.AuthorUseCase
 }
 
-func NewAuthorHandler(db *sqlx.DB) *AuthorHandler {
+func NewAuthorHandler(
+	authorUseCase *usecase.AuthorUseCase,
+) *AuthorHandler {
 	return &AuthorHandler{
-		db: db,
+		authorUseCase: authorUseCase,
 	}
 }
 
@@ -33,7 +31,7 @@ func (m *AuthorHandler) RegisterAuthor(c *gin.Context) {
 		})
 		return
 	}
-	err = repository.RegisterAuthor(m.db, uid)
+	err = m.authorUseCase.RegisterAuthor(uid)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"msg": err.Error(),
@@ -65,7 +63,7 @@ func (m *AuthorHandler) SeenMemory(c *gin.Context) {
 		})
 		return
 	}
-	err = repository.SeenMemory(m.db, uid, memoryId.MemoryId)
+	err = m.authorUseCase.SeenMemory(uid, memoryId.MemoryId)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"msg": err.Error(),
