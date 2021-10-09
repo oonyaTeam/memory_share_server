@@ -1,8 +1,6 @@
 package repository
 
 import (
-	"log"
-
 	"github.com/heroku/go-getting-started/model"
 
 	"github.com/jmoiron/sqlx"
