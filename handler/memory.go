@@ -8,6 +8,8 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/heroku/go-getting-started/model"
 	"github.com/heroku/go-getting-started/usecase"
+
+	"strconv"
 )
 
 type MemoryHandler struct {
@@ -96,3 +98,19 @@ func (m *MemoryHandler) CreateMemory(c *gin.Context) {
 	})
 }
 
+func (m *MemoryHandler) DeleteMemory(c *gin.Context) {
+	memoryId := c.Query("memory_id")
+	aid, err := strconv.Atoi(memoryId); 
+	if err != nil  {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"err": "invalid query string",
+		})
+		return
+	}
+
+	log.Println(aid)
+	
+	c.JSON(http.StatusNoContent, gin.H{
+		"msg": "ok",
+	})
+}

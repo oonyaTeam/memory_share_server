@@ -126,6 +126,7 @@ func main() {
 		authRouter.GET("/memories", memoryHandler.GetMemories)
 		authRouter.GET("/mymemories", memoryHandler.GetMyMemories)
 		authRouter.POST("/create-memory", memoryHandler.CreateMemory)
+		authRouter.DELETE("/memories", memoryHandler.DeleteMemory)
 
 		authRouter.POST("/author", authorHandler.RegisterAuthor)
 		authRouter.POST("/seen-memory", authorHandler.SeenMemory)
