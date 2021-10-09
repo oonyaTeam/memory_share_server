@@ -55,16 +55,16 @@ func (m *MemoryUseCase) GetMyMemories(uid string) ([]model.Memory, error) {
 }
 
 func (m *MemoryUseCase) CreateMemories(
-	memory string,
-	img_url string,
-	longitude float64,
-	latitude float64,
-	angle float64,
-	episodes []model.Episode,
+	memory *model.Memory,
 	uid string,
 ) (error) {
-	err := repository.CreateMemory(
-		m.db, memory, img_url, longitude, latitude, angle, episodes, uid,
+	authorId, err := repository.GetAuthorId(m.db, uid)
+	if err != nil {
+		return err
+	}
+	memory.AuthorId = authorId
+	err = repository.CreateMemory(
+		m.db, memory,
 	)
 	return err
 }

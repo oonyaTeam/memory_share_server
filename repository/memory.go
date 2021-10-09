@@ -61,22 +61,18 @@ func FillMemoriesEpisodes(db *sqlx.DB, memories []model.Memory) (error) {
 
 func CreateMemory(
 	db *sqlx.DB,
-	memory string,
-	img_url string,
-	longitude float64,
-	latitude float64,
-	angle float64,
-	episodes []model.Episode,
-	uid string,
+	memory *model.Memory,
 ) error {
 	tx := db.MustBegin()
 	
 	memory_stmt := `insert into memories(memory, image, longitude, latitude, angle, author_id)
-					select $1, $2, $3, $4, $5, id
-					from authors where uuid = $6
+					values ($1, $2, $3, $4, $5, $6)
 					RETURNING id`
 	var id int
-	err := tx.QueryRow(memory_stmt, memory, img_url, longitude, latitude, angle, uid).Scan(&id)
+	err := tx.QueryRow(
+		memory_stmt,
+		memory.Memory, memory.Image, memory.Longitude, memory.Latitude, memory.Angle, memory.AuthorId,
+	).Scan(&id)
 	if err != nil {
 		tx.Rollback()
 		return err
@@ -84,7 +80,7 @@ func CreateMemory(
 
 	// TODO: bulk insertやprepared stmt使えば高速化できるはず
 	episode_stmt := `insert into episodes(episode, longitude, latitude, memory_id) values ($1, $2, $3, $4)`
-	for _, e := range episodes {
+	for _, e := range memory.Episodes {
 		_, err := tx.Exec(episode_stmt, e.Episode, e.Longitude, e.Latitude, id)
 		if err != nil {
 			tx.Rollback()

@@ -85,12 +85,7 @@ func (m *MemoryHandler) CreateMemory(c *gin.Context) {
 	}
 
 	err = m.memoryUseCase.CreateMemories(
-		mb.Memory,
-		mb.Image,
-		mb.Longitude,
-		mb.Latitude,
-		mb.Angle,
-		mb.Episodes,
+		&mb,
 		uid,
 	)
 	if err != nil {
