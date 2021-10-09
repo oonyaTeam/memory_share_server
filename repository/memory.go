@@ -1,6 +1,8 @@
 package repository
 
 import (
+	"log"
+
 	"github.com/heroku/go-getting-started/model"
 
 	"github.com/jmoiron/sqlx"
@@ -112,4 +114,8 @@ func SeenMemoryIds(db *sqlx.DB, uid string) ([]int64, error) {
 			where authors.uuid = $1`
 	err := db.Select(&memoryIds, stmt, uid)
 	return memoryIds, err
+}
+
+func DeleteMemory(db *sqlx.DB, memoryId int) (error) {
+	return nil
 }

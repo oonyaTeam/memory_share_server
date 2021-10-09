@@ -107,8 +107,14 @@ func (m *MemoryHandler) DeleteMemory(c *gin.Context) {
 		})
 		return
 	}
-
-	log.Println(aid)
+	
+	err = m.memoryUseCase.DeleteMemories(aid)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"err": err.Error(),
+		})
+		return
+	}
 	
 	c.JSON(http.StatusNoContent, gin.H{
 		"msg": "ok",
