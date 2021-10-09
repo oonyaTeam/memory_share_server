@@ -54,17 +54,12 @@ func (m *MemoryUseCase) GetMyMemories(uid string) ([]model.Memory, error) {
 	return memories, nil
 }
 
-func (m *MemoryUseCase) CreateMemories(
-	memory *model.Memory,
-	uid string,
-) (error) {
+func (m *MemoryUseCase) CreateMemories(memory *model.Memory, uid string) (error) {
 	authorId, err := repository.GetAuthorId(m.db, uid)
 	if err != nil {
 		return err
 	}
 	memory.AuthorId = authorId
-	err = repository.CreateMemory(
-		m.db, memory,
-	)
+	err = repository.CreateMemory(m.db, memory)
 	return err
 }

@@ -59,37 +59,45 @@ func FillMemoriesEpisodes(db *sqlx.DB, memories []model.Memory) (error) {
 	return nil
 }
 
-func CreateMemory(
-	db *sqlx.DB,
-	memory *model.Memory,
-) error {
+func CreateMemory(db *sqlx.DB, memory *model.Memory) (error) {
 	tx := db.MustBegin()
 	
 	memory_stmt := `insert into memories(memory, image, longitude, latitude, angle, author_id)
 					values ($1, $2, $3, $4, $5, $6)
-					RETURNING id`
-	var id int
+					returning id`
+	var memoryId int64
 	err := tx.QueryRow(
 		memory_stmt,
 		memory.Memory, memory.Image, memory.Longitude, memory.Latitude, memory.Angle, memory.AuthorId,
-	).Scan(&id)
+	).Scan(&memoryId)
 	if err != nil {
 		tx.Rollback()
 		return err
 	}
-
+	memory.Id = memoryId
+	
 	// TODO: bulk insertやprepared stmt使えば高速化できるはず
-	episode_stmt := `insert into episodes(episode, longitude, latitude, memory_id) values ($1, $2, $3, $4)`
-	for _, e := range memory.Episodes {
-		_, err := tx.Exec(episode_stmt, e.Episode, e.Longitude, e.Latitude, id)
+	episode_stmt := `insert into episodes(episode, longitude, latitude, memory_id)
+					values ($1, $2, $3, $4)
+					returning id`
+	var episodeId int64
+	for i, e := range memory.Episodes {
+		err := tx.QueryRow(episode_stmt, e.Episode, e.Longitude, e.Latitude, memoryId).Scan(&episodeId)
 		if err != nil {
 			tx.Rollback()
 			return err
 		}
+		memory.Episodes[i].Id = episodeId
 	}
 
-	err = tx.Commit()
-	return err
+	// TODO: seenにもinsert
+	memory.Seen = true
+
+	if err = tx.Commit(); err != nil {
+		return err
+	} else {
+		return nil
+	}	
 }
 
 func SeenMemoryIds(db *sqlx.DB, uid string) ([]int64, error) {

@@ -68,8 +68,8 @@ func (m *MemoryHandler) GetMyMemories(c *gin.Context) {
 }
 
 func (m *MemoryHandler) CreateMemory(c *gin.Context) {
-	var mb model.Memory
-	if err := c.BindJSON(&mb); err != nil {
+	var memory model.Memory
+	if err := c.BindJSON(&memory); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"err": err.Error(),
 		})
@@ -84,18 +84,15 @@ func (m *MemoryHandler) CreateMemory(c *gin.Context) {
 		return
 	}
 
-	err = m.memoryUseCase.CreateMemories(
-		&mb,
-		uid,
-	)
+	err = m.memoryUseCase.CreateMemories(&memory, uid)
 	if err != nil {
 		panic(err)// TODO: error handling
 	}
 
 	log.Println("bind memory=")
-	log.Printf("%v\n", mb)
+	log.Printf("%v\n", memory)
 	c.JSON(http.StatusCreated, gin.H{
-		"msg": "OK",
+		"memory": memory,
 	})
 }
 
