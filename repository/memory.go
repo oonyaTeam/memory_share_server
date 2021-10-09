@@ -90,7 +90,12 @@ func CreateMemory(db *sqlx.DB, memory *model.Memory) (error) {
 		memory.Episodes[i].Id = episodeId
 	}
 
-	// TODO: seenにもinsert
+	seen_stmt := `insert into author_seen_memory(memory_id, author_id) values ($1, $2)`
+	_, err = tx.Exec(seen_stmt, memoryId, memory.AuthorId)
+	if err != nil {
+		tx.Rollback()
+		return err
+	}
 	memory.Seen = true
 
 	if err = tx.Commit(); err != nil {
