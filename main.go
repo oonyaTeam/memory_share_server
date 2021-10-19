@@ -124,11 +124,12 @@ func main() {
 	authRouter := router.Group("/", authMiddleware.AuthRequired)
 	{
 		authRouter.GET("/memories", memoryHandler.GetMemories)
-		authRouter.GET("/mymemories", memoryHandler.GetMyMemories)
-		authRouter.POST("/create-memory", memoryHandler.CreateMemory)
+		authRouter.GET("/memories/me", memoryHandler.GetMyMemories)
+		authRouter.POST("/memories", memoryHandler.CreateMemory)
 		authRouter.DELETE("/memories", memoryHandler.DeleteMemory)
 
 		authRouter.POST("/author", authorHandler.RegisterAuthor)
+		// URIが汚いけどfootprintsとかにしちゃうと分かりづらくなるので妥協
 		authRouter.POST("/seen-memory", authorHandler.SeenMemory)
 	}
 
