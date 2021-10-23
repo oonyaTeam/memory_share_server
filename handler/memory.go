@@ -120,3 +120,35 @@ func (m *MemoryHandler) DeleteMemory(c *gin.Context) {
 		"msg": "ok",
 	})
 }
+
+func (m *MemoryHandler) SeenMemory(c *gin.Context) {
+	var memoryId struct{
+		MemoryId int64 `json:"memory_id"`
+	}
+	if err := c.BindJSON(&memoryId); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"err": err.Error(),
+		})
+		return
+	}
+	log.Printf("memoryId struct: %v", memoryId)
+	
+	uid, err := httputil.GetUidFromToken(c)
+	if err != nil {
+		// clientが悪ければmiddlewareで弾かれるはずだから500
+		c.JSON(http.StatusInternalServerError, gin.H{// TODO: 本当にstatus500でいい？
+			"msg": err.Error(),
+		})
+		return
+	}
+	err = m.memoryUseCase.SeenMemory(uid, memoryId.MemoryId)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"msg": err.Error(),
+		})
+		return
+	}
+	c.JSON(http.StatusCreated, gin.H{
+		"msg": "OK",
+	})
+}

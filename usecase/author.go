@@ -22,7 +22,4 @@ func (m *AuthorUseCase) RegisterAuthor(uid string) (error) {
 	return err
 }
 
-func (m *AuthorUseCase) SeenMemory(uid string, memoryId int64) (error) {
-	err := repository.SeenMemory(m.db, uid, memoryId)
-	return err
-}
+

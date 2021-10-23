@@ -70,3 +70,8 @@ func (m *MemoryUseCase) DeleteMemories(memoryId int) (error) {
 	err := repository.DeleteMemory(m.db, memoryId)
 	return err
 }
+
+func (m *MemoryUseCase) SeenMemory(uid string, memoryId int64) (error) {
+	err := repository.SeenMemory(m.db, uid, memoryId)
+	return err
+}

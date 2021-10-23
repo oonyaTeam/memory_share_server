@@ -2,6 +2,7 @@ package repository
 
 import (
 	"github.com/heroku/go-getting-started/model"
+	"log"
 
 	"github.com/jmoiron/sqlx"
 	_ "github.com/lib/pq"
@@ -116,4 +117,12 @@ func SeenMemoryIds(db *sqlx.DB, uid string) ([]int64, error) {
 
 func DeleteMemory(db *sqlx.DB, memoryId int) (error) {
 	return nil
+}
+
+func SeenMemory(db *sqlx.DB, uuid string, memoryId int64) error {
+	log.Println("seen memory")
+	stmt := `insert into author_seen_memory(memory_id, author_id)
+			select $1, id from authors where uuid = $2`
+	_, err := db.Exec(stmt, memoryId, uuid)
+	return err
 }

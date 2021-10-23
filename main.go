@@ -127,10 +127,10 @@ func main() {
 		authRouter.GET("/memories/me", memoryHandler.GetMyMemories)
 		authRouter.POST("/memories", memoryHandler.CreateMemory)
 		authRouter.DELETE("/memories", memoryHandler.DeleteMemory)
+		// footprintsとかの方がスッキリするが分かりづらいので妥協
+		authRouter.POST("/memories/seen", memoryHandler.SeenMemory)
 
 		authRouter.POST("/author", authorHandler.RegisterAuthor)
-		// URIが汚いけどfootprintsとかにしちゃうと分かりづらくなるので妥協
-		authRouter.POST("/seen-memory", authorHandler.SeenMemory)
 	}
 
 	router.GET("/db", dbFunc(db))
