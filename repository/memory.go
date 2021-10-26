@@ -1,8 +1,10 @@
 package repository
 
 import (
-	"github.com/heroku/go-getting-started/model"
 	"log"
+	"time"
+
+	"github.com/heroku/go-getting-started/model"
 
 	"github.com/jmoiron/sqlx"
 	_ "github.com/lib/pq"
@@ -98,6 +100,8 @@ func CreateMemory(db *sqlx.DB, memory *model.Memory) (error) {
 		return err
 	}
 	memory.Seen = true
+
+	memory.CreatedAt = time.Now()
 
 	if err = tx.Commit(); err != nil {
 		return err
