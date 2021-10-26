@@ -10,7 +10,7 @@ import (
 
 func GetMemories(db *sqlx.DB) ([]model.Memory, error) {
 	var memories []model.Memory
-	stmt := `select memories.id, memory, longitude, latitude, image, author_id, angle
+	stmt := `select memories.id, memory, longitude, latitude, image, author_id, angle, created_at
 			from memories join authors on memories.author_id = authors.id`
 	err := db.Select(&memories, stmt)
 	if err != nil {
@@ -27,7 +27,7 @@ func GetMemories(db *sqlx.DB) ([]model.Memory, error) {
 // TODO:responseのseen消したい
 func GetMyMemories(db *sqlx.DB, uid string) ([]model.Memory, error) {
 	var memories []model.Memory
-	stmt := `select memories.id, memory, longitude, latitude, image, author_id, angle
+	stmt := `select memories.id, memory, longitude, latitude, image, author_id, angle, created_at
 			from memories join authors on memories.author_id = authors.id
 			where uuid = $1`
 	err := db.Select(&memories, stmt, uid)

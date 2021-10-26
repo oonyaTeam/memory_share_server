@@ -1,5 +1,9 @@
 package model
 
+import (
+	"time"
+)
+
 // jsonとmappingさせる構造体
 type Memory struct {
 	Id          int64     `json:"id"`
@@ -11,6 +15,7 @@ type Memory struct {
 	AuthorId    int64    `json:"author_id" db:"author_id"`
 	Angle       float64   `json:"angle"`
 	Seen        bool      `json:"seen"`
+	CreatedAt time.Time `json:"created_at" db:"created_at"`
 }
 
 type Episode struct {
