@@ -65,8 +65,6 @@ func (m *MemoryUseCase) CreateMemories(memory *model.Memory, uid string) (error)
 }
 
 func (m *MemoryUseCase) DeleteMemories(memoryId int) (error) {
-	// delete memory
-	// delete seen etc..
 	err := repository.DeleteMemory(m.db, memoryId)
 	return err
 }

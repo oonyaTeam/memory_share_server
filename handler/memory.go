@@ -108,9 +108,10 @@ func (m *MemoryHandler) DeleteMemory(c *gin.Context) {
 		return
 	}
 	
+	// TODO: BadRequestではなくね？
 	err = m.memoryUseCase.DeleteMemories(aid)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
+		c.JSON(http.StatusInternalServerError, gin.H{
 			"err": err.Error(),
 		})
 		return

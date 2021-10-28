@@ -120,7 +120,26 @@ func SeenMemoryIds(db *sqlx.DB, uid string) ([]int64, error) {
 }
 
 func DeleteMemory(db *sqlx.DB, memoryId int) (error) {
-	return nil
+	tx := db.MustBegin()
+
+	stmts := []string{
+		`delete from episodes where memory_id = $1`,
+		`delete from author_seen_memory where memory_id = $1`,
+		`delete from memories where id = $1`}
+	
+	for _, stmt := range stmts {
+		_, err := tx.Exec(stmt, memoryId)
+		if err != nil {
+			tx.Rollback()
+			return err
+		}
+	}
+	
+	if err := tx.Commit(); err != nil {
+		return err
+	} else {
+		return nil
+	}
 }
 
 func SeenMemory(db *sqlx.DB, uuid string, memoryId int64) error {
