@@ -28,12 +28,6 @@ func dbFunc(db *sqlx.DB) gin.HandlerFunc {
 			return
 		}
 
-		// if _, err := db.Exec("INSERT INTO ticks VALUES (now())"); err != nil {
-		// 	c.String(http.StatusInternalServerError,
-		// 		fmt.Sprintf("Error incrementing tick: %q", err))
-		// 	return
-		// }
-
 		rows, err := db.Query("SELECT tick FROM ticks")
 		if err != nil {
 			c.String(http.StatusInternalServerError,
@@ -56,7 +50,9 @@ func dbFunc(db *sqlx.DB) gin.HandlerFunc {
 
 func connectDB() (*sqlx.DB, error) {
 	if e := os.Getenv("DEV"); e == "DEV" {
-		db, err := sqlx.Open("postgres", os.Getenv("POSTGRESQL_URL"))
+		postgresUrl := fmt.Sprintf("postgresql://localhost:5432/%s?user=%s&password=%s",
+						os.Getenv("POSTGRES_DB"), os.Getenv("POSTGRES_USER"), os.Getenv("POSTGRES_PASSWORD"))
+		db, err := sqlx.Open("postgres", postgresUrl)
 		return db, err;
 	} else {
 		db, err := sqlx.Open("postgres", os.Getenv("DATABASE_URL"))
@@ -106,6 +102,10 @@ func main() {
 	if err != nil {
 		log.Fatalf("Error opening database: %q", err)
 	}
+	if err = db.Ping(); err != nil {
+		log.Fatalf("Error connecting database\n%q", err)
+	}
+	
 	memoryUseCase := usecase.NewMemoryUseCase(db)
 	memoryHandler := handler.NewMemoryHandler(memoryUseCase)
 	authorUseCase := usecase.NewAuthorUseCase(db)
