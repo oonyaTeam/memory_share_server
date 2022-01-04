@@ -3,11 +3,11 @@ package handler
 import (
 	"log"
 	"net/http"
-	"github.com/heroku/go-getting-started/src/httputil"
+	"github.com/heroku/go-getting-started/httputil"
 
 	"github.com/gin-gonic/gin"
-	"github.com/heroku/go-getting-started/src/model"
-	"github.com/heroku/go-getting-started/src/usecase"
+	"github.com/heroku/go-getting-started/model"
+	"github.com/heroku/go-getting-started/usecase"
 
 	"strconv"
 )
