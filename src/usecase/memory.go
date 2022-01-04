@@ -1,8 +1,8 @@
 package usecase
 
 import (
-	"github.com/heroku/go-getting-started/model"
-	"github.com/heroku/go-getting-started/repository"
+	"github.com/heroku/go-getting-started/src/model"
+	"github.com/heroku/go-getting-started/src/repository"
 
 	"github.com/jmoiron/sqlx"
 	_ "github.com/lib/pq"

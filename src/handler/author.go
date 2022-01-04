@@ -4,8 +4,8 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/heroku/go-getting-started/httputil"
-	"github.com/heroku/go-getting-started/usecase"
+	"github.com/heroku/go-getting-started/src/httputil"
+	"github.com/heroku/go-getting-started/src/usecase"
 )
 
 type AuthorHandler struct {
