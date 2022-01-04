@@ -20,43 +20,12 @@ import (
 	"github.com/gin-contrib/cors"
 )
 
-func dbFunc(db *sqlx.DB) gin.HandlerFunc {
-	return func(c *gin.Context) {
-		if _, err := db.Exec("CREATE TABLE IF NOT EXISTS ticks (tick timestamp)"); err != nil {
-			c.String(http.StatusInternalServerError,
-				fmt.Sprintf("Error creating database table: %q\n DB:%s\n", err, os.Getenv("DATABASE_URL")))
-			return
-		}
-
-		// if _, err := db.Exec("INSERT INTO ticks VALUES (now())"); err != nil {
-		// 	c.String(http.StatusInternalServerError,
-		// 		fmt.Sprintf("Error incrementing tick: %q", err))
-		// 	return
-		// }
-
-		rows, err := db.Query("SELECT tick FROM ticks")
-		if err != nil {
-			c.String(http.StatusInternalServerError,
-				fmt.Sprintf("Error reading ticks: %q", err))
-			return
-		}
-
-		defer rows.Close()
-		for rows.Next() {
-			var tick time.Time
-			if err := rows.Scan(&tick); err != nil {
-				c.String(http.StatusInternalServerError,
-					fmt.Sprintf("Error scanning ticks: %q", err))
-				return
-			}
-			c.String(http.StatusOK, fmt.Sprintf("Read from DB: %s\n", tick.String()))
-		}
-	}
-}
 
 func connectDB() (*sqlx.DB, error) {
 	if e := os.Getenv("DEV"); e == "DEV" {
-		db, err := sqlx.Open("postgres", os.Getenv("POSTGRESQL_URL"))
+		postgresUrl := fmt.Sprintf("postgresql://localhost:5432/%s?user=%s&password=%s",
+						os.Getenv("POSTGRES_DB"), os.Getenv("POSTGRES_USER"), os.Getenv("POSTGRES_PASSWORD"))
+		db, err := sqlx.Open("postgres", postgresUrl)
 		return db, err;
 	} else {
 		db, err := sqlx.Open("postgres", os.Getenv("DATABASE_URL"))
@@ -73,7 +42,6 @@ func main() {
 	}
 
 	router := gin.Default()
-	// router.Use(gin.Logger())
 	router.Use(cors.New(cors.Config{
         AllowMethods: []string{
             "POST",
@@ -106,6 +74,10 @@ func main() {
 	if err != nil {
 		log.Fatalf("Error opening database: %q", err)
 	}
+	if err = db.Ping(); err != nil {
+		log.Fatalf("Error connecting database\n%q", err)
+	}
+	
 	memoryUseCase := usecase.NewMemoryUseCase(db)
 	memoryHandler := handler.NewMemoryHandler(memoryUseCase)
 	authorUseCase := usecase.NewAuthorUseCase(db)
@@ -120,7 +92,6 @@ func main() {
 	}
 	authMiddleware := middleware.NewAuth(auth)
 	
-	// authをするGroup
 	authRouter := router.Group("/", authMiddleware.AuthRequired)
 	{
 		authRouter.GET("/memories", memoryHandler.GetMemories)
@@ -133,6 +104,5 @@ func main() {
 		authRouter.POST("/author", authorHandler.RegisterAuthor)
 	}
 
-	router.GET("/db", dbFunc(db))
 	router.Run(":" + port)
 }
