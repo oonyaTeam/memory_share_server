@@ -19,6 +19,7 @@ func NewAuth(client *auth.Client) *Auth {
 }
 
 func (auth *Auth) AuthRequired(c *gin.Context) {
+	log.Println("auth middle")
 	idToken, err := getTokenFromHeader(c)
 	if err != nil {
 		log.Println(err)

@@ -4,5 +4,3 @@ bin/
 .envrc
 firebase_credentials.json
 howto_make_env.txt
-.idToken
-
