@@ -1,1 +1,7 @@
 # memory share server
+色々いじったらデプロイがコケるようになったのでdevlopment branchしかいじらない
+
+- 継続開発しない
+- HerokuからAWSに移行するつもり
+以上の2点からとりあえず動くversionをmasterにしておいて、devlopmentで開発を進める
+AWSにデプロイできるようになったらmasterにmergeする
