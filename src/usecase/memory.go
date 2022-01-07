@@ -1,8 +1,8 @@
 package usecase
 
 import (
-	"github.com/heroku/go-getting-started/model"
-	"github.com/heroku/go-getting-started/repository"
+	"github.com/oonyaTeam/memory_share_server/model"
+	"github.com/oonyaTeam/memory_share_server/repository"
 
 	"github.com/jmoiron/sqlx"
 	_ "github.com/lib/pq"

@@ -1,4 +1,4 @@
-module github.com/heroku/go-getting-started
+module github.com/oonyaTeam/memory_share_server
 
 go 1.12
 

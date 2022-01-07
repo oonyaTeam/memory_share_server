@@ -5,7 +5,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/heroku/go-getting-started/firebase"
+	"github.com/oonyaTeam/memory_share_server/firebase"
 	"io/ioutil"
 	"log"
 	"net/http"

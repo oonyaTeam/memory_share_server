@@ -4,7 +4,7 @@ import (
 	"log"
 	"time"
 
-	"github.com/heroku/go-getting-started/model"
+	"github.com/oonyaTeam/memory_share_server/model"
 
 	"github.com/jmoiron/sqlx"
 	_ "github.com/lib/pq"

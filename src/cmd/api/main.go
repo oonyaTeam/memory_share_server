@@ -7,10 +7,10 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
-	"github.com/heroku/go-getting-started/firebase"
-	"github.com/heroku/go-getting-started/handler"
-	"github.com/heroku/go-getting-started/middleware"
-	"github.com/heroku/go-getting-started/usecase"
+	"github.com/oonyaTeam/memory_share_server/firebase"
+	"github.com/oonyaTeam/memory_share_server/handler"
+	"github.com/oonyaTeam/memory_share_server/middleware"
+	"github.com/oonyaTeam/memory_share_server/usecase"
 	_ "github.com/heroku/x/hmetrics/onload"
 
 	"github.com/jmoiron/sqlx"
